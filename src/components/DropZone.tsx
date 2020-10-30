@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import styled, { css } from 'styled-components'
 import { MdCloudUpload } from 'react-icons/md'
 import { BsFileEarmarkSpreadsheet } from 'react-icons/bs'
@@ -42,37 +42,37 @@ const DropZoneForm = styled.form<Props>`
 `
 
 export function DropZone({ onChangeFile = (f: File) => {}, ...props}) {
-  const [dragOver, setDragOver] = React.useState(false);
-  const [file, setFile] = React.useState<File|null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [file, setFile] = useState<File|null>(null);
 
-  const handleDrag = React.useCallback((event) => {
+  const handleDrag = useCallback((event) => {
     event.preventDefault();
     event.stopPropagation();
   }, [])
-  const handleDragOver = React.useCallback((event) => {
+  const handleDragOver = useCallback((event) => {
     handleDrag(event)
     setDragOver(true)
-  }, [])
-  const handleDragLeave = React.useCallback((event) => {
+  }, [handleDrag])
+  const handleDragLeave = useCallback((event) => {
     handleDrag(event)
     setDragOver(false)
-  }, [])
-  const handleDrop = React.useCallback((event) => {
+  }, [handleDrag])
+  const handleDrop = useCallback((event) => {
     handleDragLeave(event)
     const file = event.dataTransfer.files[0];
     setFile(file)
-  }, [])
-  const handleChange = React.useCallback((event) => {
+  }, [handleDragLeave])
+  const handleChange = useCallback((event) => {
     const file = event.target.files[0]
     setFile(file)
   }, [])
-  const handleSubmit = React.useCallback((event) => {
+  const handleSubmit = useCallback((event) => {
     handleDrag(event)
-  }, [])
+  }, [handleDrag])
 
-  React.useEffect(() => {
+  useEffect(() => {
     onChangeFile(file as File)
-  }, [file])
+  }, [file, onChangeFile])
 
   const Icon = (dragOver || file) ? BsFileEarmarkSpreadsheet : MdCloudUpload
   return (
